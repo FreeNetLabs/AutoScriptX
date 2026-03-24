@@ -1,7 +1,7 @@
 #!/bin/bash
 
 
-BASE_URL="https://raw.githubusercontent.com/FreeNetLabs/AutoScriptX/master"
+BASE_URL="https://raw.githubusercontent.com/FreeNetLabs/AutoScriptX/rewrite"
 
 domain=""
 
