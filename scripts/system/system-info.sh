@@ -17,33 +17,33 @@ UPTIME=$(uptime -p)
 SERVICES=$(systemctl list-units --type=service --state=running --no-pager | awk '{print $1}' | tail -n +2)
 
 gum format --theme=dracula <<EOF
-# 🖥️ Basic Info
+# Basic Info
 - **Hostname:** $HOSTNAME
 - **OS:** $OS
 - **Kernel:** $KERNEL
 - **Architecture:** $ARCH
 
-# 🧠 CPU & Memory
+# CPU & Memory
 - **CPU Model:** $CPU_MODEL
 - **Cores:** $CORES
 - **Memory Used:** $MEM_USED
 - **Swap Used:** $SWAP_USED
 
-# 💽 Disk Usage
+# Disk Usage
 \`\`\`
 $DISK
 \`\`\`
 
-# 🌐 Network Info
+# Network Info
 - **Internal IP:** $IP_INT
 - **Public IP:** $IP_PUB
 - **Gateway:** $GATEWAY
 - **DNS Servers:** $DNS
 
-# ⏱️ Uptime
+# Uptime
 - $UPTIME
 
-# 🔧 Running Services
+# Running Services
 \`\`\`
 $SERVICES
 \`\`\`

@@ -1,0 +1,11 @@
+{
+  "addr": "127.0.0.1",
+  "port": 8080,
+  "banner": "Welcome to AutoScriptX!\n",
+  "users": [
+    {
+      "user": "admin",
+      "pass": "secret"
+    }
+  ]
+}

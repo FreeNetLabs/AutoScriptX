@@ -1,43 +1,37 @@
 #!/bin/bash
 
 DOMAIN_FILE="/etc/AutoScriptX/domain"
-PORT_INFO="/etc/AutoScriptX/port-info.json"
 
 gum format --theme dracula --type markdown "# 🛠️ Create SSH Account"
 
-echo -ne "\e[38;5;212m  👤 Username:\e[0m "
+echo -ne "\e[38;5;212m Username:\e[0m "
 read -r username
-echo -ne "\e[38;5;212m  🔑 Password:\e[0m "
+echo -ne "\e[38;5;212m Password:\e[0m "
 read -r password
-echo -ne "\e[38;5;212m  📅 Expired (days):\e[0m "
-read -r expire_days
 
-public_ip=$(curl -s ifconfig.me)
 domain=$(cat "$DOMAIN_FILE")
-expire_date=$(date -d "$expire_days days" +"%Y-%m-%d")
 
-useradd -e "$expire_date" -s /bin/false -M "$username"
-echo -e "$password\n$password" | passwd "$username" &>/dev/null
-expire_date_str=$(chage -l "$username" | grep "Account expires" | cut -d: -f2 | xargs)
+jq --arg u "$username" --arg p "$password" \
+   '.users += [{"user": $u, "pass": $p}]' \
+   /etc/AutoScriptX/config/ssh-ify.json > /tmp/ssh-ify.json
+mv /tmp/ssh-ify.json /etc/AutoScriptX/config/ssh-ify.json
+
+systemctl restart ssh-ify
 
 gum format --theme dracula --type markdown <<EOF
-# ✅ SSH Account Created
+# SSH Account Created
 
-**👤 Username**    : \`$username\`  
-**🔑 Password**    : \`$password\`  
-**📅 Expires On**  : $expire_date_str  
-**🌐 Public IP**   : $public_ip  
-**📡 Host**        : $domain  
+** Username**    : \`$username\`  
+** Password**    : \`$password\`  
+** Host**        : $domain  
 
-# 📦 Ports
+# Ports
 
-- SSH WS      : 80
-- SSH SSL WS  : 443
-- SSL/TLS     : 443
-- SQUID       : 8080
-- UDPGW       : 7200,7300
+- SSH WS (HTTP)  : 80
+- SSH WSS (HTTPS): 443
+- UDPGW          : 7200,7300
 
-# 🧪 Payloads
+# Payloads
 
 **WSS Payload**
 \`\`\`

@@ -7,21 +7,16 @@ check_status() {
 
 declare -A services=(
   [ssh]="SSH"
-  [nginx]="Nginx"
-  [dropbear]="Dropbear"
+  [caddy]="Caddy"
+  [ssh-ify]="SSH-Ify"
   [stunnel4]="Stunnel4"
   [cron]="Cron"
-  [sshguard]="SSHGuard"
   [vnstat]="VnStat"
-  [ws-proxy.service]="WebSocket Proxy"
   [badvpn-udpgw@7200.service]="UDPGW (7200)"
   [badvpn-udpgw@7300.service]="UDPGW (7300)"
-  [squid]="Squid"
-  [x-ui.service]="X-UI"
-  [xui-watcher.service]="XUI Watcher"
 )
 
-gum format --theme dracula --type markdown "# ⚙️ Service Status"
+gum format --theme dracula --type markdown "# Service Status"
 
 for service in "${!services[@]}"; do
   status=$(check_status "$service")
@@ -44,9 +39,9 @@ action=$(gum choose "start" "stop" "restart" --header="What do you want to do wi
 
 while IFS= read -r service; do
   if systemctl "$action" "$service" >/dev/null 2>&1; then
-    gum style --foreground 2 "✅ ${services[$service]} $action successful."
+    gum style --foreground 2 " ${services[$service]} $action successful."
   else
-    gum style --foreground 1 "❌ Failed to $action ${services[$service]}."
+    gum style --foreground 1 " Failed to $action ${services[$service]}."
   fi
 done <<< "$selected_services"
 
