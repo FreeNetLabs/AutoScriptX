@@ -62,14 +62,6 @@ install_packages() {
     echo "Packages installed."
 }
 
-disable_ipv6() {
-    echo "Disabling IPv6..."
-    echo "net.ipv6.conf.all.disable_ipv6 = 1" >> /etc/sysctl.d/99-disable-ipv6.conf
-    echo "net.ipv6.conf.default.disable_ipv6 = 1" >> /etc/sysctl.d/99-disable-ipv6.conf
-    sysctl --system || echo "Failed to reload sysctl settings."
-    echo "IPv6 disabled."
-}
-
 configure_ssh_ify() {
     echo "Setting up SSH-Ify..."
     systemctl stop ssh-ify || true
@@ -93,7 +85,13 @@ configure_ssh_ify() {
 configure_caddy() {
     echo "Setting up Caddy..."
     wget -qO /etc/caddy/Caddyfile "$BASE_URL/config/Caddyfile" || echo "Failed to download Caddyfile."
-    sed -i "s/:80/$domain/" /etc/caddy/Caddyfile
+    if [[ -n "$domain" ]]; then
+        # Only replace the top-level site block address, avoid touching :8080 in proxy targets
+        sed -i "/^:80[[:space:]]*{/ s/^:80/$domain:80/" /etc/caddy/Caddyfile
+        echo "Caddy configured for domain: $domain:80"
+    else
+        echo "No domain provided; keeping default :80 in Caddyfile."
+    fi
 
     systemctl daemon-reload
     systemctl enable caddy
@@ -132,9 +130,6 @@ install_scripts() {
       done
     done
     
-    wget -qO /etc/AutoScriptX/uninstall.sh "$BASE_URL/uninstall.sh" || echo "Failed to download uninstall.sh."
-    chmod +x /etc/AutoScriptX/uninstall.sh
-    
     echo "Scripts installed."
 }
 
@@ -156,7 +151,6 @@ main() {
     update_system
     install_packages
 
-    disable_ipv6
     configure_ssh_ify
     configure_caddy
     setup_badvpn

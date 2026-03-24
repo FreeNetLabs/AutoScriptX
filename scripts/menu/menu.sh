@@ -36,7 +36,6 @@ opt=$(gum choose --limit=1 --header "  Choose" \
   "Change Domain" \
   "Manage Services" \
   "System Info" \
-  "Uninstall" \
   "Exit")
 
 clear
