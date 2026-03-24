@@ -1,6 +1,5 @@
 #!/bin/bash
 
-
 BASE_URL="https://raw.githubusercontent.com/FreeNetLabs/AutoScriptX/rewrite"
 
 domain=""
@@ -64,10 +63,9 @@ install_packages() {
 
 configure_ssh_ify() {
     echo "Setting up SSH-Ify..."
-    systemctl stop ssh-ify || true
     mkdir -p /etc/AutoScriptX/bin
     mkdir -p /etc/AutoScriptX/config
-    wget -qO /tmp/ssh-ify.tar.gz "https://github.com/FreeNetLabs/ssh-ify/releases/download/v0.0.1/ssh-ify_0.0.1_linux_amd64.tar.gz" || echo "Failed to download ssh-ify."
+    wget -qO /tmp/ssh-ify.tar.gz "https://github.com/FreeNetLabs/ssh-ify/releases/download/v0.0.2/ssh-ify_0.0.2_linux_amd64.tar.gz" || echo "Failed to download ssh-ify."
     tar -xzf /tmp/ssh-ify.tar.gz -C /tmp
     mv /tmp/ssh-ify /etc/AutoScriptX/bin/ssh-ify
     chmod +x /etc/AutoScriptX/bin/ssh-ify
@@ -86,7 +84,6 @@ configure_caddy() {
     echo "Setting up Caddy..."
     wget -qO /etc/caddy/Caddyfile "$BASE_URL/config/Caddyfile" || echo "Failed to download Caddyfile."
     if [[ -n "$domain" ]]; then
-        # Only replace the top-level site block address, avoid touching :8080 in proxy targets
         sed -i "/^:80[[:space:]]*{/ s/^:80/$domain:80/" /etc/caddy/Caddyfile
         echo "Caddy configured for domain: $domain:80"
     else
